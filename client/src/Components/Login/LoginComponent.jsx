@@ -11,6 +11,7 @@ import "./login.scss";
 
 function LoginComponent() {
   const navigate = useNavigate();
+  axios.defaults.withCredentials = true;
   // validation
   const validationSchema = Yup.object({
     userName: Yup.string().required('Required!'),
@@ -22,7 +23,7 @@ function LoginComponent() {
   // use formik
   const formik = useFormik({
     initialValues: {
-      userName: "migara10",
+      userName: "migaraten",
       password: "J@va1234",
     },
     validationSchema,
@@ -35,17 +36,19 @@ function LoginComponent() {
   
   const loginUser = async (user) =>{
     await axios.post("http://localhost:4100/api/login", user).then(res => {
-      console.log(res)
-      toast.success(res.data.message);
+      const { token, message, user } = res.data;
+      localStorage.setItem("authToken", token);
+      toast.success(message);
       setTimeout(() =>{
-        navigate("/");
-      },2000)
+        navigate('/dashboard', { state: { user } });
+      },1300)
     }).catch(error => {
       toast.error(error.response.data.error);
     });
   }
   return (
     <div className="login-page">
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="admin-banner">
         <h1 className="text-center w-100">
           Employee Manage <br /> System
