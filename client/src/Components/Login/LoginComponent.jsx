@@ -6,19 +6,22 @@ import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useUser } from '../../UserContext';
 
 import "./login.scss";
 
 function LoginComponent() {
+  const { updateUser } = useUser();
+
   const navigate = useNavigate();
-  axios.defaults.withCredentials = true;
+
   // validation
   const validationSchema = Yup.object({
     userName: Yup.string().required('Required!'),
     password: Yup.string()
-        .required("Required!")
-        .min(8, "Password must be at least 8 characters")
-  })
+      .required("Required!")
+      .min(8, "Password must be at least 8 characters")
+  });
 
   // use formik
   const formik = useFormik({
@@ -30,22 +33,25 @@ function LoginComponent() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      loginUser(values)
+      loginUser(values);
     },
   });
-  
-  const loginUser = async (user) =>{
+
+  const loginUser = async (user) => {
     await axios.post("http://localhost:4100/api/login", user).then(res => {
       const { token, message, user } = res.data;
       localStorage.setItem("authToken", token);
+      localStorage.setItem('userData', JSON.stringify(user));  // Store user as JSON string
       toast.success(message);
-      setTimeout(() =>{
+      setTimeout(() => {
+        updateUser(user); 
         navigate('/dashboard', { state: { user } });
-      },1300)
+      }, 1300);
     }).catch(error => {
       toast.error(error.response.data.error);
     });
   }
+
   return (
     <div className="login-page">
       <Toaster position="top-center" reverseOrder={false} />

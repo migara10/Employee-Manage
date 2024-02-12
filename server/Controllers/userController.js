@@ -138,10 +138,11 @@ const loginUser = async (req, res) => {
           { expiresIn: "1h" }
         );
         const { password, ...userWithoutPassword } = user;
-        res.cookie('token', token)
+        // res.cookie('token', token)
         return res.status(201).json({
           message: "User login successfully",
           user: userWithoutPassword,
+          token
         });
       } else {
         return res.status(400).send({ error: "Wrong password" });

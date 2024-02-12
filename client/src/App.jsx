@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { UserProvider } from './UserContext.jsx';
 import LoginComponent from "./Components/Login/LoginComponent";
 import RegisterComponent from "./Components/Register/RegisterComponent";
 
@@ -47,9 +48,9 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div>
+    <UserProvider>
       <RouterProvider router={router}></RouterProvider>
-    </div>
+    </UserProvider>
   );
 }
 
